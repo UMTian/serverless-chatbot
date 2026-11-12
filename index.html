@@ -1,287 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple OpenRouter Chatbot</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 16px;
-        }
-
-        .chat-container {
-            width: 100%;
-            max-width: 700px;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            height: 80vh;
-            max-height: 800px;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            background: #1a1a2e;
-            color: white;
-            padding: 16px 20px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .chat-header span {
-            font-size: 0.8rem;
-            font-weight: 400;
-            opacity: 0.7;
-            margin-left: auto;
-        }
-
-        .chat-box {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: #f9fafb;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 10px 16px;
-            border-radius: 18px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            font-size: 0.95rem;
-        }
-
-        .message.user {
-            align-self: flex-end;
-            background: #1a1a2e;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.assistant {
-            align-self: flex-start;
-            background: #e5e7eb;
-            color: #1f2937;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.system {
-            align-self: center;
-            background: #fef3c7;
-            color: #92400e;
-            font-size: 0.85rem;
-            text-align: center;
-            max-width: 90%;
-        }
-
-        .input-area {
-            display: flex;
-            padding: 12px 16px;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            gap: 10px;
-        }
-
-        .input-area textarea {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 24px;
-            font-family: inherit;
-            font-size: 0.95rem;
-            resize: none;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-area textarea:focus {
-            border-color: #1a1a2e;
-        }
-
-        .input-area button {
-            background: #1a1a2e;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            padding: 0 24px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, opacity 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .input-area button:hover:not(:disabled) {
-            background: #2d2d44;
-        }
-
-        .input-area button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .typing-indicator {
-            align-self: flex-start;
-            background: #e5e7eb;
-            color: #6b7280;
-            padding: 10px 16px;
-            border-radius: 18px;
-            border-bottom-left-radius: 4px;
-            font-style: italic;
-            font-size: 0.9rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chatbot</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <div class="chat-container">
-        <div class="chat-header">
-            🤖 ERNIE Chatbot
-            <span>baidu/ernie-5.5-flash-preview:free</span>
-        </div>
-
-        <div class="chat-box" id="chatBox">
-            <div class="message assistant">Hello! I'm running on Baidu ERNIE 5.5 Flash. How can I help you today?</div>
-        </div>
-
-        <div class="input-area">
-            <textarea id="userInput" rows="1" placeholder="Type your message..." autofocus></textarea>
-            <button id="sendBtn" onclick="sendMessage()">Send</button>
-        </div>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="avatar">🤖</div>
+      <div class="header-info">
+        <span class="bot-name">AI Assistant</span>
+        <span class="status">Online</span>
+      </div>
     </div>
 
-    <script>
-        // ⚠️ SECURITY WARNING: This key is exposed in the browser.
-        // Only use this setup for local testing. For production, proxy the request via a backend.
-        const API_KEY = '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';
-        const MODEL = 'baidu/ernie-5.5-flash-preview:free';
-        const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+    <div class="chat-messages" id="chatMessages">
+      <div class="message bot">
+        <div class="bubble">Hey there! How can I help you today?</div>
+      </div>
+    </div>
 
-        const chatBox = document.getElementById('chatBox');
-        const userInput = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
+    <div class="chat-input-area">
+      <textarea
+        id="userInput"
+        placeholder="Type a message..."
+        rows="1"
+        autocomplete="off"
+      ></textarea>
+      <button id="sendBtn" onclick="sendMessage()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 
-        // Store conversation history for context
-        let conversationHistory = [];
-
-        // Allow sending with Enter key (without Shift)
-        userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-
-        // Auto-resize textarea
-        userInput.addEventListener('input', () => {
-            userInput.style.height = 'auto';
-            userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
-        });
-
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            // Clear input and disable send button
-            userInput.value = '';
-            userInput.style.height = 'auto';
-            sendBtn.disabled = true;
-
-            // Add user message to UI
-            addMessageToUI('user', message);
-            conversationHistory.push({ role: 'user', content: message });
-
-            // Show typing indicator
-            const typingEl = document.createElement('div');
-            typingEl.className = 'typing-indicator';
-            typingEl.id = 'typingIndicator';
-            typingEl.textContent = 'Thinking...';
-            chatBox.appendChild(typingEl);
-            scrollToBottom();
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json',
-                        // Optional headers for OpenRouter rankings
-                        'HTTP-Referer': window.location.origin,
-                        'X-Title': 'Simple OpenRouter Chatbot'
-                    },
-                    body: JSON.stringify({
-                        model: MODEL,
-                        messages: conversationHistory
-                    })
-                });
-
-                // Remove typing indicator
-                const indicator = document.getElementById('typingIndicator');
-                if (indicator) indicator.remove();
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    const errorMsg = errorData.error?.message || `HTTP error ${response.status}`;
-                    throw new Error(errorMsg);
-                }
-
-                const data = await response.json();
-                const assistantReply = data.choices?.[0]?.message?.content;
-
-                if (!assistantReply) {
-                    throw new Error('No response content received from the model.');
-                }
-
-                // Add assistant response to UI and history
-                addMessageToUI('assistant', assistantReply);
-                conversationHistory.push({ role: 'assistant', content: assistantReply });
-
-            } catch (error) {
-                // Remove typing indicator if it still exists
-                const indicator = document.getElementById('typingIndicator');
-                if (indicator) indicator.remove();
-
-                addMessageToUI('system', `Error: ${error.message}`);
-                console.error('API Error:', error);
-            } finally {
-                sendBtn.disabled = false;
-                userInput.focus();
-                scrollToBottom();
-            }
-        }
-
-        function addMessageToUI(role, text) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            messageDiv.textContent = text;
-            chatBox.appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        function scrollToBottom() {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
